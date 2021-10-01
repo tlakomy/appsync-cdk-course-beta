@@ -1,0 +1,32 @@
+type Book {
+  id: ID!
+  name: String!
+  completed: Boolean!
+}
+
+input BookInput {
+  id: ID!
+  name: String!
+  completed: Boolean!
+}
+
+input UpdateBookInput {
+  id: ID!
+  name: String
+  completed: Boolean
+}
+
+type Query {
+  listBooks: [Book]!
+  getBookById(bookId: ID!): Book
+}
+
+type Mutation {
+  createBook(book: BookInput!): Book
+  updateBook(book: UpdateBookInput!): Book
+  deleteBook(bookId: ID!): ID
+}
+
+type Subscription {
+  onCreateBook: Book @aws_subscribe(mutations: ["createBook"])
+}
