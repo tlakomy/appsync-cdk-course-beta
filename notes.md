@@ -424,3 +424,5 @@ type Subscription {
 
 - Then show a subscription being updated side by side with the GraphQL playground
 - Delete a stack
+
+IDEA: Rate a book
