@@ -9,8 +9,7 @@ export const handler: AppSyncResolverHandler<
   Book | null
 > = async (event) => {
   const book = event.arguments.book;
-  console.log("event", event);
-  console.log("book", book);
+
   try {
     if (!process.env.BOOKS_TABLE) {
       console.log("BOOKS_TABLE was not specified");
@@ -23,7 +22,7 @@ export const handler: AppSyncResolverHandler<
 
     return book;
   } catch (err) {
-    console.log("DynamoDB error: ", err);
+    console.error("[Error] DynamoDB error: ", err);
     return null;
   }
 };
