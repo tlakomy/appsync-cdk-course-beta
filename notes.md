@@ -1,9 +1,3 @@
-https://appsync-immersionday.workshop.aws/lab1/2_deploy-with-cdk.html
-https://aws.amazon.com/blogs/mobile/graphql-security-appsync-amplify/
-https://aws.amazon.com/blogs/mobile/building-scalable-graphql-apis-on-aws-with-cdk-and-aws-appsync/
-https://benoitboure.com/how-to-use-typescript-with-appsync-lambda-resolvers
-https://www.youtube.com/watch?v=DOGadkjV7Hs
-
 - Create a CDK project
 - Create a GraphQL schema
 
@@ -363,8 +357,8 @@ const wait = (timeoutMs: number) =>
   new Promise((resolve) => setTimeout(resolve, timeoutMs));
 ```
 
-- Show how errors are propagated to GraphQL API
-- Show how to investigate timeouts
+- Show how errors are propagated to GraphQL API - errors array, show how to find logs
+- Show how to investigate timeouts in X-Ray
 
 - Update book:
 
@@ -424,3 +418,11 @@ type Subscription {
 
 - Then show a subscription being updated side by side with the GraphQL playground
 - Delete a stack
+
+References:
+
+- https://appsync-immersionday.workshop.aws/lab1/2_deploy-with-cdk.html
+- https://aws.amazon.com/blogs/mobile/graphql-security-appsync-amplify/
+- https://aws.amazon.com/blogs/mobile/building-scalable-graphql-apis-on-aws-with-cdk-and-aws-appsync/
+- https://benoitboure.com/how-to-use-typescript-with-appsync-lambda-resolvers
+- https://www.youtube.com/watch?v=DOGadkjV7Hs
