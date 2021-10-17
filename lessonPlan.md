@@ -1,9 +1,13 @@
+# Build a GraphQL API with AWS CDK and AppSync
+
 ## Lesson 1.
 
 **Create an AWS CDK stack from scratch**
 
 Description:
 _Before we start working on our GraphQL API, we need to create a project first. In this lesson, we're going to learn how to create a brand new CDK project from scratch._
+
+Link to Configuring AWS CLI page: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html
 
 Steps:
 
@@ -74,7 +78,7 @@ const api = new appsync.GraphqlApi(this, "Api", {
 
 **Add an API key to an AppSync API**
 
-Description: _All AppSync-powered APIs need to have some sort of authentication (othrwise there'd be a risk of DDoS attack, which might be costly). In this lesson we're going to learn how to add a non-default API key authorization to our AppSync API._
+Description: _All AppSync-powered APIs need to have some sort of authentication (otherwise there'd be a risk of DDoS attack, which might be costly). In this lesson, we're going to learn how to add a non-default API key authorization to our AppSync API._
 
 Steps:
 
@@ -142,11 +146,18 @@ const listBooksLambda = new lambda.Function(this, "listBooksHandler", {
 export const handler = async () => {
   return [
     {
-      id: 123,
-      name: "My Awesome Book",
+      id: "abc-123",
+      title: "My Awesome Book",
       completed: true,
       rating: 10,
       reviews: ["The best book ever written"],
+    },
+    {
+      id: "def-456",
+      title: "A Terrible Book",
+      completed: true,
+      rating: 2,
+      reviews: ["What did I just read?!"],
     },
   ];
 };
@@ -174,7 +185,7 @@ listBookDataSource.createResolver({
 
 **Create a DynamoDB table to store books**
 
-Description: _Our API definitely shouldn't rely on hardcoded data. In this lesson, we're going to learn how to create a DynamoDB table, and allow a Lamdbda function to access its data._
+Description: _Our API definitely shouldn't rely on hardcoded data. In this lesson, we're going to learn how to create a DynamoDB table, and allow a Lambda function to access its data._
 
 Steps:
 
@@ -225,7 +236,7 @@ Steps:
 ```ts
 type Book = {
   id: string;
-  name: string;
+  title: string;
   completed?: boolean;
   rating?: number;
   reviews?: string[];
@@ -240,7 +251,7 @@ import { DynamoDB } from "aws-sdk";
 
 type Book = {
   id: string;
-  name: string;
+  title: string;
   completed?: boolean;
   rating?: number;
   reviews?: string[];
@@ -277,7 +288,7 @@ export const handler: AppSyncResolverHandler<null, Book[] | null> =
     "listBooks": [
       {
         "id": "456",
-        "name": "A Philosophy of Software Design",
+        "title": "A Philosophy of Software Design",
         "completed": true,
         "rating": 11,
         "reviews": [
@@ -287,7 +298,7 @@ export const handler: AppSyncResolverHandler<null, Book[] | null> =
       },
       {
         "id": "123",
-        "name": "Atomic Habits",
+        "title": "Atomic Habits",
         "completed": true,
         "rating": 10,
         "reviews": ["10/10, changed my life!", "Fantastic book"]
@@ -303,7 +314,7 @@ export const handler: AppSyncResolverHandler<null, Book[] | null> =
 
 **Generate TypeScript types from a GraphQL schema**
 
-Description: _Creating TypeScript types from a GraphQL schema by hand is prone to errors - what if we forgot to update the types after changing the schema? In this lesson we're going to learn how to autogenerate TypeScript types from a schema and use them in a Lambda function._
+Description: _Creating TypeScript types from a GraphQL schema by hand is prone to errors - what if we forgot to update the types after changing the schema? In this lesson, we're going to learn how to autogenerate TypeScript types from a schema and use them in a Lambda function._
 
 Note: let's make sure to include the link to this excellent blogpost: https://benoitboure.com/how-to-use-typescript-with-appsync-lambda-resolvers
 
@@ -391,7 +402,7 @@ type Mutation {
 ```graphql
 input BookInput {
   id: ID!
-  name: String!
+  title: String!
 }
 ```
 
@@ -507,6 +518,14 @@ Description: _Apart from getting all of our books, we'd like to be able to query
 Steps:
 
 - Add a `getBookById` query to schema
+
+```graphql
+type Query {
+  listBooks: [Book]
+  getBookById(bookId: ID!): Book
+}
+```
+
 - Regenerate types
 - Add a Lambda function to stack and grant it ability to read data from DDB
 
@@ -577,7 +596,7 @@ export const handler: AppSyncResolverHandler<
 
 **Refactor a CDK stack and change Lambda function architecture to ARM**
 
-Description: _Our CDK stack code is getting rather repetetive. In this quick lesson we're going to refactor it a little bit and introduce a new architecture for our Lamdbda function - [a recently announced ARM support.](https://aws.amazon.com/blogs/aws/aws-lambda-functions-powered-by-aws-graviton2-processor-run-your-functions-on-arm-and-get-up-to-34-better-price-performance/)_
+Description: _Our CDK stack code is getting rather repetitive. In this quick lesson, we're going to refactor it a little bit and introduce a new architecture for our Lambda function - [a recently announced ARM support.](https://aws.amazon.com/blogs/aws/aws-lambda-functions-powered-by-aws-graviton2-processor-run-your-functions-on-arm-and-get-up-to-34-better-price-performance/)_
 
 Steps:
 
@@ -600,7 +619,7 @@ const commonLambdaProps: Omit<lambda.FunctionProps, "handler"> = {
 
 **Use logging and X-Ray to debug performance issues in AppSync API**
 
-Description: _GraphQL is excellent because it allows us to call multiple APIs with a single query. This fact can also be its downfall - what happens if one of the underlying APIs is slow? The whole query is slowed down as a result, and this can be diffult to debug._
+Description: _GraphQL is excellent because it allows us to call multiple APIs with a single query. This fact can also be its downfall - what happens if one of the underlying APIs is slow? The whole query is slowed down as a result, and this can be difficult to debug._
 
 _In this quick lesson we're going to learn how to enable logging and AWS X-Ray in order to get a better visibility into our AppSync API._
 
@@ -626,23 +645,9 @@ const wait = (timeoutMs: number) =>
 
 **Add an updateBook mutation to AppSync GraphQL API**
 
-Description: _Whenever we create a book, there are no reviews, rating or `completed` flag. In this lesson, we're going to learn how to implement an `updateBook` mutation in order to be able to update the properties of an already existing book_
+Description: _Whenever we create a book, there are no reviews, rating or `completed` flag. In this lesson, we're going to learn how to implement an `updateBook` mutation in order to be able to update the properties of an already existing book. In addition to that, we're going to learn how to use [dynoexpr](https://github.com/tuplo/dynoexpr) in order to implement that functionality without introducing unnecessary complexity_
 
 ## Lesson 14
-
-**Delete a book using a GraphQL mutation with AppSync**
-
-Description: _All things must come to an end. In this lesson, we're going to learn how to delete a book with a `deleteBook` mutation in order to be able to clear our list if needed._
-
-## Lesson 15
-
-**Use dynoexpr in order to simplify DynamoDB UpdateExpression**
-
-Description: _In the previous lesson we've introduced `UpdateExpression` which assumed that whenever we update a book, we're providing all of its properties. This may not always be the case (e.g. when we simply want to mark the book as `completed`)._
-
-_In this lesson, we're going to learn how to use [dynoexpr](https://github.com/tuplo/dynoexpr) in order to implement that functionality while simplifying the code._
-
-## Lesson 16
 
 **Add a GraphQL subscription to an AppSync API**
 
@@ -658,6 +663,6 @@ type Subscription {
 
 - Then show a subscription being updated side by side with the GraphQL playground
 
-## Lesson 17
+## Lesson 15
 
 **Delete a CDK stack**
